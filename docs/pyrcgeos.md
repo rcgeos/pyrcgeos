@@ -1,0 +1,4 @@
+ 
+# pyrcgeos module
+
+::: pyrcgeos.pyrcgeos
