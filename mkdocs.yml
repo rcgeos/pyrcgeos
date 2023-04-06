@@ -48,5 +48,7 @@ nav:
     - FAQ: faq.md
     - Changelog: changelog.md
     - Report Issues: https://github.com/rcgeos/pyrcgeos/issues
+    - Examples: 
+        - examples/intro.ipynb
     - API Reference:
           - pyrcgeos module: pyrcgeos.md
