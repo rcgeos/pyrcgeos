@@ -2,6 +2,11 @@
 
 
 [![image](https://img.shields.io/pypi/v/pyrcgeos.svg)](https://pypi.python.org/pypi/pyrcgeos)
+[![image](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/rcgeos/pyrcgeos)
+[![image](https://img.shields.io/pypi/v/pyrcgeos.svg)](https://pypi.python.org/pypi/pyrcgeos)
+[![image](https://img.shields.io/conda/vn/conda-forge/leafmap.svg)](https://anaconda.org/conda-forge/pyrcgeos)
+[![image](https://pepy.tech/badge/pyrcgeos)](https://pypi.org/project/pyrcgeos)
+[![image](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
 **A python package for interactive mapping.**
