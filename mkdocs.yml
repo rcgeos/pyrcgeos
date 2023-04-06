@@ -50,5 +50,7 @@ nav:
     - Report Issues: https://github.com/rcgeos/pyrcgeos/issues
     - Examples: 
         - examples/intro.ipynb
+        - examples/folium.ipynb
+        - examples/ipyleflet.ipynb
     - API Reference:
           - pyrcgeos module: pyrcgeos.md
