@@ -3,3 +3,5 @@
 __author__ = """rcgeos"""
 __email__ = 'renato.cumani4@gmail.com'
 __version__ = '0.0.2'
+
+from .pyrcgeos import *
