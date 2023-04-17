@@ -53,5 +53,6 @@ nav:
         - examples/folium.ipynb
         - examples/ipyleaflet.ipynb
         - examples/pyrcgeos.ipynb
+        - examples/raster.ipynb
     - API Reference:
           - pyrcgeos module: pyrcgeos.md

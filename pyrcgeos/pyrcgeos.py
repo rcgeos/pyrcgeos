@@ -120,6 +120,86 @@ class Map(ipyleaflet.Map):
         )
         self.add_layer(tile_layer)
 
+    def add_basemap(self, basemap, **kwargs):
+
+        import xyzservices.providers as xyz
+
+        if basemap.lower()=="roadmap":
+            url='http://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}'
+            self.add_tile_layer(url, name=basemap, attribution='Google Roadmap', **kwargs)
+        elif basemap.lower()=="satellite":
+            url='http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}'
+            self.add_tile_layer(url, name=basemap, attribution='Google Satellite', **kwargs)
+        else: 
+            try:
+                basemap = eval(f"xyz.{basemap}")
+                url = basemap.build_url()
+                attribution = basemap.attribution
+                self.add_tile_layer(url, name=basemap.name, attribution=attribution,**kwargs)
+            except:
+                raise ValueError(f"Basemap '{basemap}' not found")
+    def add_geojson(self, data, name="GeoJSON",**kwargs): 
+        """Adds a GeoJSON layer to the map
+
+        Args:
+            data (dict): The GeoJSON data
+        """    
+        if isinstance(data,str):
+            import json
+            with open(data, "r") as f:
+                data = json.load(f)    
+        geojson = ipyleaflet.GeoJSON(data=data, name=name,**kwargs)
+        self.add_layer(geojson)
+
+    def add_shp(self, data, name="Shapefile", **kwargs):
+        """Add a Shapefile layer to the map
+
+        Args:
+            data (str): The Path to the Shapefile
+            name (str, optional): Name of the layer. Defaults to "Shapefile".
+        """        
+        import geopandas as gpd
+        gdf = gpd.read_file(data)
+        geojson = gdf.__geo_interface__
+        self.add_geojson(geojson, name=name, **kwargs)
+    
+    
+    def add_raster(self, url, name='Raster', fit_bounds=True, **kwargs):
+        """Adds a raster layer to the map.
+        Args:
+            url (str): The URL of the raster layer.
+            name (str, optional): The name of the raster layer. Defaults to 'Raster'.
+            fit_bounds (bool, optional): Whether to fit the map bounds to the raster layer. Defaults to True.
+        """
+        import httpx
+
+        titiler_endpoint = "https://titiler.xyz"
+
+        r = httpx.get(
+            f"{titiler_endpoint}/cog/info",
+            params = {
+                "url": url,
+            }, 
+            verify=False # Added this to address SSL certificate missing temporarily
+        ).json()
+
+        bounds = r["bounds"]
+
+        r = httpx.get(
+            f"{titiler_endpoint}/cog/tilejson.json",
+            params = {
+                "url": url,
+            },
+            verify=False # Added this to address SSL certificate missing temporarily
+        ).json()
+
+        tile = r["tiles"][0]
+
+        self.add_tile_layer(url=tile, name=name, **kwargs)
+
+        if fit_bounds:
+            bbox = [[bounds[1], bounds[0]], [bounds[3], bounds[2]]]
+            self.fit_bounds(bbox)
 
 def generate_random_string(length=10, upper=False, digits=False, punctuation=False):
     """Generate a random string of a given length

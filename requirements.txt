@@ -1,2 +1,6 @@
 folium
 ipyleaflet
+folium
+ipyleaflet
+geopandas
+httpx
