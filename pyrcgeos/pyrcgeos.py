@@ -3,6 +3,7 @@
 import random
 import string
 import ipyleaflet
+import ipywidgets as widgets
 
 class Map(ipyleaflet.Map):
     """Map class to add Map, basemap, layers and controls
@@ -28,7 +29,7 @@ class Map(ipyleaflet.Map):
 
         if "layers_control" not in kwargs:
             kwargs["layers_control"] = True
-        if "layers_control":
+        if kwargs["layers_control"]:
             self.add_layers_control()
         if "fullscreen_control" not in kwargs:
             kwargs["fullscreen_control"] = True
@@ -36,6 +37,7 @@ class Map(ipyleaflet.Map):
             self.add_fullscreen_control(position="topleft")
         self.add_draw_control()
         self.add_search_control(position="topleft")
+        self.add_toolbar(position="topright")
 
     def add_search_control(self, position="topleft",**kwargs):
         """Add Search Control button 
@@ -128,7 +130,7 @@ class Map(ipyleaflet.Map):
             url='http://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}'
             self.add_tile_layer(url, name=basemap, attribution='Google Roadmap', **kwargs)
         elif basemap.lower()=="satellite":
-            url='http://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}'
+            url='http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}'
             self.add_tile_layer(url, name=basemap, attribution='Google Satellite', **kwargs)
         else: 
             try:
@@ -200,7 +202,90 @@ class Map(ipyleaflet.Map):
         if fit_bounds:
             bbox = [[bounds[1], bounds[0]], [bounds[3], bounds[2]]]
             self.fit_bounds(bbox)
+    def add_local_raster(self, filename, name='Local raster', **kwargs):
+        try: 
+            import localtileserver
+        except:
+            raise ImportError("localtileserver not installed, please install the library using conda or mamba")
+        
+    def add_image(self, url, width, height, position):
+        """Adds an image to the map
 
+        Args:
+            url (str): The URL of the image
+            width (int): The width of the image
+            height (int): The height of the image
+            position (list): The position of the image
+        """        
+        image = ipyleaflet.ImageOverlay(
+            url=url,
+            bounds=position+[position[0] + height, position[1] + width]
+        )
+        self.add_layer(image)
+
+    def add_toolbar(self, position="topright"):
+
+        widget_width = "250px"
+        padding = "0px 0px 0px 5px"  # upper, right, bottom, left
+
+        toolbar_button = widgets.ToggleButton(
+            value=False,
+            tooltip="Toolbar",
+            icon="wrench",
+            layout=widgets.Layout(width="28px", height="28px", padding=padding),
+        )
+
+        close_button = widgets.ToggleButton(
+            value=False,
+            tooltip="Close the tool",
+            icon="times",
+            button_style="primary",
+            layout=widgets.Layout(height="28px", width="28px", padding=padding),
+        )
+
+        toolbar = widgets.HBox([toolbar_button])
+
+        def toolbar_click(change):
+            if change["new"]:
+                toolbar.children = [toolbar_button, close_button]
+            else:
+                toolbar.children = [toolbar_button]
+                
+        toolbar_button.observe(toolbar_click, "value")
+
+        def close_click(change):
+            if change["new"]:
+                toolbar_button.close()
+                close_button.close()
+                toolbar.close()
+                
+        close_button.observe(close_click, "value")
+
+        rows = 2
+        cols = 2
+        grid = widgets.GridspecLayout(rows, cols, grid_gap="0px", layout=widgets.Layout(width="65px"))
+
+        icons = ["folder-open", "map", "info", "area-chart"]
+
+        for i in range(rows):
+            for j in range(cols):
+                grid[i, j] = widgets.Button(description="", button_style="primary", icon=icons[i*rows+j], 
+                                            layout=widgets.Layout(width="28px", padding="0px"))
+                
+        toolbar = widgets.VBox([toolbar_button])
+
+        def toolbar_click(change):
+            if change["new"]:
+                toolbar.children = [widgets.HBox([close_button, toolbar_button]), grid]
+            else:
+                toolbar.children = [toolbar_button]
+                
+        toolbar_button.observe(toolbar_click, "value")
+
+        toolbar_ctrl = ipyleaflet.WidgetControl(widget=toolbar, position=position)
+
+        self.add_control(toolbar_ctrl)
+    
 def generate_random_string(length=10, upper=False, digits=False, punctuation=False):
     """Generate a random string of a given length
 

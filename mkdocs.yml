@@ -56,3 +56,4 @@ nav:
         - examples/raster.ipynb
     - API Reference:
           - pyrcgeos module: pyrcgeos.md
+          - foliumap module: foliumap.md
